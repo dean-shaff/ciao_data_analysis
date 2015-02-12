@@ -138,7 +138,7 @@ class Spectral(object):
 			subprocess.call("punlearn specextract",shell=True)
 			subprocess.call("pset specextract asp=@multi_asp.lis",shell=True)
 			subprocess.call("pset specextract mskfile=@multi_mask.lis",shell=True)
-			# subprocess.call("pset specextract badpixfile=@multi_bpix.lis",shell=True)
+			subprocess.call("pset specextract badpixfile=@multi_bpix.lis",shell=True)
 			subprocess.call("pset specextract infile=@multi_src.lis",shell=True)
 			# subprocess.call("pset specextract asp=@multi_asp.lis",shell=True)
 			extract_str = "pset specextract outroot="
