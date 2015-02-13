@@ -160,11 +160,11 @@ class Spectral(object):
 		"""
 		Graphs the spectra, with background subtracted.
 		"""
-		if not os.path.isfile(os.path.join(self.directory,"spec.pi")):
-			print("You haven't generated spectra files!")
-		else:
-			os.chdir(self.directory)
-			pi = "spec.pi"
+		def gen_graph(spec_file,obsid):
+			"""
+			assumes you've already moved to correct directory
+			"""
+			pi = spec_file
 			ui.load_data(pi)
 			ui.notice(0.1, 10)
 			ui.group_counts(groupcounts)
@@ -175,9 +175,28 @@ class Spectral(object):
 			pychips.set_preference("foreground.display", "black")
 			pychips.set_preference("background.display", "white")
 			pychips.set_current_plot("plot1")
-			pychips.set_plot_title("Spectra for obsid {}".format(self.obsid))
+			pychips.set_plot_title("Spectra for obsid {}".format(obsid))
 			pychips.set_curve(['*.color', 'red'])
 			raw_input(">> ")
+		try:
+			dummy = self.obsid 
+			if not os.path.isfile(os.path.join(self.directory,"spec.pi")):
+				print("You haven't generated spectra files!")
+			else:
+				os.chdir(self.directory)
+				pi = "spec.pi"
+				gen_graph(pi,self.obsid)
+
+		except AttributeError:
+			if not os.path.exists(os.path.join(self.reproj_dir_abs, "spec")):
+				print("Make sure to generate spectrum files before plotting!")
+			else: 
+				spec_dir = os.path.join(self.reproj_dir_abs, "spec")
+				os.chdir(spec_dir)
+				specs = ["{}.pi".format(obsid) for obsid in self.obsids]
+				for i,j in zip(specs, self.obsids):
+					gen_graph(i,j)
+
 
 	def background_total(self):
 		os.chdir(self.directory)
