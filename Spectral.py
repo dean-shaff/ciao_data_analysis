@@ -36,7 +36,7 @@ def reproject(obsids):
 	"""
 	obsids is a list/tuple containing the integer obsids. 
 	"""
-
+	directory_name = "reproj{}/".format(time.strftime("%d-%m-%Y"))
 	filename_str = str()
 	for index, obsid in enumerate(obsids):
 		if index == len(obsids)-1:
@@ -44,10 +44,14 @@ def reproject(obsids):
 		else:
 			filename_str+=str(obsid)
 			filename_str+=","
+	if os.path.exists(os.path.join(base_dir,directory_name)):
+		subprocess.call("rm -rf {}".format(os.path.join(base_dir,directory_name)),shell=True)
+	else:
+		pass
 	subprocess.call("punlearn chandra_repro", shell=True)
 	subprocess.call("chandra_repro indir={} mode=h clobber=yes".format(filename_str), shell=True)
 	subprocess.call("punlearn reproject_obs", shell=True)
-	subprocess.call("reproject_obs {} reproj{}/ clobber=yes".format(filename_str,time.strftime("%d-%m-%Y")), shell=True)
+	subprocess.call("reproject_obs {} {} clobber=yes".format(filename_str,directory_name), shell=True)
 	
 	# subprocess.call("punlearn chandra_repro", shell=True)
 	# subprocess.call("punlearn chandra_repro", shell=True)
@@ -73,7 +77,7 @@ class Spectral(object):
 				self.file_name = "acisf0{}_repro_evt2.fits".format(self.obsid)
 			elif len(str(self.obsid)) == 3:
 				self.file_name = "acisf00{}_repro_evt2.fits".format(self.obsid)
-			self.directory = "/home/dean/ciao-data/longexp/{}/repro".format(self.obsid)
+			self.directory = "/home/dean/ciao-data/{}/repro".format(self.obsid)
 			self.source_file = "first.reg"
 			self.bkg_file = "first_bg.reg"
 
@@ -140,7 +144,7 @@ class Spectral(object):
 			subprocess.call("pset specextract mskfile=@multi_mask.lis",shell=True)
 			subprocess.call("pset specextract badpixfile=@multi_bpix.lis",shell=True)
 			subprocess.call("pset specextract infile=@multi_src.lis",shell=True)
-			# subprocess.call("pset specextract asp=@multi_asp.lis",shell=True)
+			subprocess.call("pset specextract weight=no clobber=yes",shell=True) #without weight command specified as no, this doens't work.
 			extract_str = "pset specextract outroot="
 			for index, obsid in enumerate(self.obsids):
 				if index == len(self.obsids)-1:

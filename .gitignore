@@ -12,3 +12,4 @@ exposure_info.*
 logs/
 longexp/
 old/
+spec/
